@@ -1,0 +1,72 @@
+start a working area (see also: git help tutorial)
+   clone      Clone a repository into a new directory
+              $git clone -b branch_name your_repo
+              $git clone --no-single-branch your_repo
+              
+   init       Create an empty Git repository or reinitialize an existing one
+
+work on the current change (see also: git help everyday)
+   add        Add file contents to the index
+              $git add file_name
+              $git add .   <====add all changes
+   mv         Move or rename a file, a directory, or a symlink
+   reset      Reset current HEAD to the specified state
+              $git reset --hard commit_id_you_want_to_go <===reset your local HEAD to commit_id
+              $git push origin HEAD --force <====commit your action in above step
+              $git log --pretty=oneline |head -5
+              $git reset --hard your_previous_commit_id
+              $git push origin HEAD --force   <==== The above 3 lines will revert the previouse reset
+              
+   rm         Remove files from the working tree and from the index
+              $git rm -rf folder_name    <=== folder will be removed from working directory and index
+              $git rm -rf --cached folder_name  <===folder in index will be removed, but the one in working dir will be kept
+              $git commit -m 'Remove folder'
+              $git push origin your_branch_name  <===== This will delete the folder from your repo
+
+examine the history and state (see also: git help revisions)
+   bisect     Use binary search to find the commit that introduced a bug
+   grep       Print lines matching a pattern
+   log        Show commit logs
+              $git log
+              $git log --pretty=oneline
+              $git log --graph
+              
+              $git reflog  <====This will show the record of all your action
+              
+   show       Show various types of objects
+              $git show  <====commit id, author, date, tag, diff, index, etc
+              $git show --tags --pretty=oneline
+              
+   status     Show the working tree status
+              $git status   <===This will show the changes in your working dir since your last push
+
+grow, mark and tweak your common history
+   branch     List, create, or delete branches
+              $git branch [-a | -r]  <===show local [all | remote] branches   
+              $git branch branch_name  <===create a new branch
+              $git push origin branch_name <===push your new branch to your remote repo
+              $git branch -d branch_name <====delete branch_name locally
+              $git push origin :branch_name <====This will delete branch_name in your remote repo
+              
+   checkout   Switch branches or restore working tree files
+              $git checkout branch_name  <===This will bring all the files in branch_name branch to your working dir
+              
+   commit     Record changes to the repository
+              $git commit -m 'comment' <===This will bring all the changes you added into your local git
+              
+   diff       Show changes between commits, commit and working tree, etc
+   
+   merge      Join two or more development histories together
+    
+   rebase     Forward-port local commits to the updated upstream head
+   tag        Create, list, delete or verify a tag object signed with GPG
+              $git tag tag_name   <====This will create a local tag named tag_name
+              $git push origin --tags <===This will push your tags to your remote repo
+              $git tag -d tag_name  <=== This will delete tag named tag_name
+              $git push origin :refs/tags/tag_name   <====This will delete the tag named tag_name from your repo
+              $git checkout tags/tag_name [-f]  <===This will checkout codes with specific tag
+
+collaborate (see also: git help workflows)
+   fetch      Download objects and refs from another repository
+   pull       Fetch from and integrate with another repository or a local branch
+   push       Update remote refs along with associated objects

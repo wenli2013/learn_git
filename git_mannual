@@ -1,0 +1,649 @@
+
+git教程
+
+CMS: Content Management System，内容管理系统
+	svn: Apache Subversion, TortoiseSVN
+	cvs: concurrent versions/versioning system
+	git: the stupid content tracker  -->Linus Torvalds
+安装 ubuntu
+	$apt-get git-core
+
+	查看git版本
+		$git --version
+
+git folders
+	mkdir gitdemo
+	cd gitdemo
+	git init
+	echo 'asfadss'>1.txt
+	ls -a 	===>.git
+	cd .git
+	ls -ls 	==> COMMIT_EDITMSG, FETCH_HEAD, HEAD, ORIG_HEAD, branches,
+			==> config, description, hooks, index, info, logs, objects, 
+			==> refs
+
+			staging area === index
+
+git config
+	git config --global user.name 'Frank Du'
+	git config --global user.email 'frank.du2015@gmail.com'
+
+
+Git Three area
+	Repository: area to store all codes ==> .git, 通过git init 创建
+
+	Working Directory: your own directory ==> files you are working on
+										  ==> git add --> put the files to 
+										  				  staging area
+
+	Staging Area/index: tempory place to store code from git add
+						==> git commit will transfer the codes from here to  repository
+
+Git三个对象
+		每个对象都有type, size 和 content
+	blob: store file data, generally it's a file
+
+	tree: basically like a dir, references a bunch of other trees or blobs
+
+	commit: points to a single tree, marking it as what the project looked 
+			like at a certain time
+
+	tag: a pointer point to a commit object
+
+命令
+	初始化: git init 
+	加入stage: git add file_name
+	放入仓库: git commit -m 'your_comments'
+	找回删除的文件: $rm file_name
+				  $git checkout -f HEAD
+
+	生成hash:	$git hash-object file_name
+	查看git中的文件内容: $git show 'the first few hash identifiying a file'
+	tag:  $git tag 'tag_name' | git tag -a v1.0 -m "This is the stable v1"
+		  $cat .git/refs/tags/tag_name  
+
+		  $find .git/objects/ -type f | wc 
+
+
+	查看当前位置:
+		$cat .git/HEAD 	==>ref refs/heads/master
+		$cat .git/refs/heads/master 
+		$git cat-file -t { df87 | 9e7b }
+
+	打包下载特定tag: 
+		$git archive --format=tar --prefix=your_name/v1.0 | gzip >/tmp/v1.0.gz
+
+	分支:
+		$git branch branch_name
+		$cat .git/HEAD ==>ref: refs/heads/master
+		$ls .git/refs/heads/ 	==>master, branch_name
+		$cat .git/refs/heads/master		==>hash for master
+		$cat .git/refs/heads/branch_name ==>hash for branch_name
+			master 和 branch_name 有相同的hash，即指向相同的commit
+			==>HEAD始终指向活动的分支
+	切换分支:
+		$git branch 	==> *master -->活动， branch_name
+		$git checkout branch_name	==>切换到分支branch_name
+		$git branch 	==> master, *branch_name -->活动分支
+
+	分之合并:
+		1. 切回master
+			$git checkout master
+		2. 合并 -->会产生冲突??
+			$git merge branch_name_to_be_merged
+
+			Fast forwarding
+			Three way merge
+
+		3. 删除分支
+			$git branch -D branch_name_to_be_deleted
+
+操作
+本地操作
+1. 创建项目后
+	$git init  ==>Initialized empty Git repository
+2. 添加文件到本地
+	$git add [files_list | dir_lists]
+3. 提交的本地git库
+	$git commit -m "Your_comments"
+
+推送到github
+1. 到GitHub网站注册，自己账号下创建项目，得到项目的ssh 或者https 连接地址
+	https://github.com/Toulouse2008/Flaskr.git
+2. 本地连接到github
+	$git remote add origin https://github.com/Toulouse2008/Flaskr.git
+3. 推送
+	$git push -u origin master
+		==> Error: The requested URL returned error: 403
+		解决方案:
+			1. vi .git/config
+			2. modify url
+				from: https://github.com/Toulouse2008/Flaskr.git
+				to:	  https://Toulouse@github.com/Toulouse2008/Flaskr.git
+			3. $git push -u origin master
+				input your github password:xxxx
+			4. Done
+
+克隆github的protjec
+	clone
+		$git clone https://github.com/Toulouse2008/django
+
+
+
+练习
+
+安装git Mac OS
+    安装brew
+    $mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+    安装git
+    $brew install git
+
+获取帮助
+    $man git
+    $git help commmit
+    $man git-commit
+
+初步-->主分支master
+    1. 建立github账号
+    2. 新建repository
+    3. Terminal line，新建git文件夹，并切入
+    4. 初始化git
+        $git init
+    5. 新建txt
+        $touch 1.txt
+    6. 加入本地git
+        $git add 1.txt
+    7. 执行commit
+        $git commit -m 'test 1'
+    8. 建立远程连接
+        $git remote add origin  git@github.com:Toulouse2008/git.git
+            -->有问题，参考git_key_issue.txt
+    9. 完成第一次推送
+        $git push -u origin master
+    10. 重复步骤, 即可推送不同文件
+        6-->7-->9
+    11. 删除加入本地但不想push的文件
+        $git rm --cached your_file_name
+    12. 如果只是本地删除了一个或者多个文件，要想把这些改变推送到repo，可以执行如下操作
+    	$git commit -m 'del'
+	$git push
+
+撤销操作 $git reset --hard |-- soft commit_id  默认选项为soft
+    1. 放弃工作目录下的所有修改
+        $git reset --hard HEAD
+    2. 移除缓存区的所有文件
+        $git reset HEAD
+    3. 放弃某个文件的所有本地修改
+        $git checkout HEAD <file_name>
+    4. 重置一个提交
+        $git revert <commit>
+    5. HEAD重置到指定位置，并放弃该位置之后的所有修改
+        $git reset --hard <commit>
+    6. HEAD重置到上次提交的位置，并之后的修改标记为未添加到缓存区的修改
+        $git reset <commit>
+    7. 将HEAD重置到上一次提交的位置，并保留未提交的本地修改
+        $git reset --keep <commit>
+
+example:
+If you want to roll back to v2.0, and give up all your changes after that, here is the steps:
+1.  Find the commit id you want to go back to.
+$git log –pretty=oneline| head -5
+2. Reset to that specific commit id
+$git reset --hard 6106fc3e12
+3. Push your changes to the remote repository
+$git push origin HEAD --force
+
+
+玩玩submodule
+    1. 添加子模块
+        $git submodule add [url][path]
+        eg.==> $git submodule add git://github.com/soberh/ui-libs.git src/main/webapp/ui-libs
+    2. 初始化子模块
+        $git submodule init
+    3. 更新子模块
+        $git submodule update
+    4. 删除子模块
+        - $git rm --cached [path]
+        - 编辑 .gitmodules 文件，将子模块的相关配置节点删掉
+        - 编辑 .git/config 文件，将子模块的相关配置节点删掉
+        - 手动删除子模块残留的目录
+
+    忽略指定类型的文件 ==>配置一下 .gitignore
+    1. repo根目录下创建名为 .gitignore 的文件
+    2. 写入要忽略的文件和文件夹
+
+
+玩玩branch
+    1. 先看看当前的整体
+            $git branch  ==>本地
+            显示所有分支，并以 * 标记当前活动分支
+            $git branch -a      ==>包括远程，即github
+    2. 新建分支
+        $git branch new     //用分支名称替换new
+    3. 再次查看
+        $git branch
+            两个分支，new和master， * 标记在master上
+    4. 切入新建的new分支
+        $git checkout new
+    5. 看看是否切换成功
+        $git branch
+            此时，* 标记在new分支前面，表示切换成功
+    6. 给new分支添点东西
+        $echo "for new test 1" > new1.txt
+        $git add new1.txt
+        $git commit -m 'new first'
+        $git push origin new
+            也可以添加更多内容
+    7. 切回master
+        $git checkout master
+
+    8. 合并分支
+        注意：先切回master，然后再合并new到master
+        $git merge new
+    9. 删除本地合并后的分支
+        $git branch -d new
+        $git branch
+            // 只有master，new已经删除了
+    10. 删除github上，已经合并过的分支
+        $git push origin :new
+
+    11. 合并分支的策略
+        有很多其他合并策略，比如，ours，recursive, octopus, etc
+        $git merge -s ours
+        $git merge -s recursive
+
+
+分支重命名和rebase  ???
+    重命名
+    1. 本地
+        $git branch -m your_old_name your_new_name
+    2. 远程--->分两步，先推送重命名后的分支，在删除旧分支
+        $git push -u origin new_name
+        $git push origin :old_name
+    3. rebase -->把分支从当前主分支的节点，移动到另外的一个节点位置
+    4. 放弃rebase
+        $git rebase --abort
+    5. 继续rebase
+        $git rebase --continue
+
+
+看看你的状态
+    $git log [options] [commits] [[--]path...]
+    $git log        -->详细记录，退出 q
+    $git log --pretty=oneline   -->单行
+    $git log --oneline --decorate  -->同上
+    美观显示法
+    $git log --graph --all
+
+    $git log --stat
+    $git status
+
+    $git ls-files -s --abbrev
+    $git cat-file -p file_hash_num
+
+    $git log --author="username"
+    $git log -p <file>  ==>显示某个文件的所有修改信息
+    $git blame <file>   ==>显示谁，在何时，修改了什么
+    $git grep "搜索内容"
+
+玩玩tag   
+    1. 打上一个tag
+        $git tag -a tag_name -m 'your_tag_info'
+    2. 查看版本
+        $git tag -l | --list
+    3. 删除版本
+        $git tag -d tag_name
+    4. 查看远程tag <--------------????? Unknown option –r?
+        $git tag -r
+    5. 推送本地tag到远程(现在本地创建, 后推送)
+        $git push origin --tags  
+    6. 删除远程版本
+        $git push origin :refs/tags/[your_tag_name]  ==>是这样的
+    7. 合并远程tag到本地
+        $git pull origin --tags
+    8. checkout	
+        指定版本的code
+	$git checkout your_tag_name
+	===>Warning ===>Warning
+	===>此时，处于HEAD detached的状态，if you commit any changes and you want to push them to certain branch, you will have
+	===>switch to that branch first, then do $git cherry-pick you_commit_id  <===which is the one showed when you checkout
+	===>to the branch. After that, you can do $git push.
+    号外==> $git archive
+
+Hotfix on a specific version
+    1. Checkout code under that version
+    	$git checkout your_version
+    2. 新建一个hotfix分支
+    	$git branch hotfixv#
+    3. 把新建的分支推送到远程
+    	$git push origin hotfixv#
+	  或者
+	$git push --set-upstream origin hotfixv#
+    4. 切换到hotfix分支
+    	$git checkoutout hotfix#
+    5. 修复bug
+    6. 把修改内容加入git
+    	$git add .
+	$git commit -m 'fix #'
+	$git push
+    7. 发布修改，即给一个小版本号，部署测试
+    8. 通过后，把修改合并到主分支
+    	$git checkout master
+	$git merge hotfix#
+	$git push   <=====本地merge同步到远程
+    9. 删除hotfix分支
+    	$git branch -d hotfix#
+	$git push origin :hotfix#
+
+代码回滚 git reset  --hard | --soft
+    默认参数 -soft,所有commit的修改都会退回到git缓冲区
+    参数--hard，所有commit的修改直接丢弃
+    
+    退回到上一个版本：$git reset --hard HEAD^
+    退回到指定commit_id: $git reset --hard commit_id
+    推送回滚到远程: $git push origin HEAD --force
+    
+    查看回滚操作的历史记录: $git reflog
+    拿到滚动记录后，可以在滚动间穿梭: $git reset --hard log_id
+
+如何把指定文件退回到指定版本
+    1. 找到要退回目的地的Hash值
+        $git log --pretty=oneline
+    2. 在git中将文件回滚
+        $git reset HASH_VALUE(e.g., d3e39d3e39) file_name
+	$git commit -m 'revert d to vd2'
+    3. 把回滚后的文件更新到工作目录 working directory
+    	$git checkout file_name
+    4. 查看文件内容，确定合乎要求
+    	$cat file_name | less file_name
+    5. 同步更新到远程
+    	$git push
+
+合作项目
+        - 在github账号，设置共享
+    1. 登录github
+    2. 进入要共享的项目
+    3. 进入该项目下的 settings
+    4. 左边，options下，进入Collaborators
+    5. 右边，Add collaborator
+    6. 等待接受
+
+        - 开始项目合作
+    0. 登录github
+    00. 接受邀请
+    1. clone 项目到本地
+        $git clone project_link //--> https://github.com/ssniu/angular_shoppinglist.git
+    2. 进入项目目录
+    3. 新建任意文件
+    4. 执行下列命令
+        $git add new_file
+        $git commit -m 'new'
+        $git push -u origin master
+    5. 去github连接查看，可以看到new_file
+
+    - 拉取合作者的更新到本地
+    pull
+    1. 拉取分支内容，同时merge到本地的当前分支，假设是master分支，也可以是任何其他的活动分支
+        $git pull origin new
+    2. 拉取分支并合并到指定的本地分支
+        $git pull origin remote_branch_name:local_branch_name
+    3. rebase模式
+        $git pull rebase remote_branch_name:local_branch_name
+    fetch + merge
+    1. 获取远程特定分支的内容
+        $git fetch origin branch_name
+    2. 合并到本地分支
+        $git merge ----???
+
+配置git
+    1. 通过修改 ~/.gitconfig, 控制自己的git信息
+        [user]
+            email = your_email
+            name = your name
+        [push]
+            default = simple
+
+    2. 命令行设置
+            格式
+                $git config --{local,global,system} parameter value
+        $git config --global user.name your_name   //-->如果有空格，请放入引号内
+        $git config --global user.email your_email
+	<======== One of the most import parameter ----> longpaths <------========>
+	$git config [--global] core.longpaths true
+
+    3. 查看当前配置
+        格式
+            $git config --list
+
+删除已经删除的folder
+    1. 删掉本地git内的
+        $git rm -rf --cached ./path/to/your_folder
+        $git commit -m 'Removed folder'
+    2. 删掉github上的
+        $git push origin your_branch_name
+删掉已经在repo的folder
+    1. 删掉本地git内的
+        $git rm -rf --cached ./path/to/your_folder
+	$git add .
+        $git commit -m 'Removed folder'
+    2. 删掉github上的
+        $git push origin your_branch_name
+    	
+
+
+玩玩 detached HEAD
+	frank@ ~/git/testgit $  git checkout 2.0.0
+	Note: checking out '2.0.0'.
+
+	You are in 'detached HEAD' state. You can look around, make experimental
+	changes and commit them, and you can discard any commits you make in this
+	state without impacting any branches by performing another checkout.
+
+	If you want to create a new branch to retain commits you create, you may
+	do so (now or later) by using -b with the checkout command again. Example:
+
+	  git checkout -b <new-branch-name>
+
+	HEAD is now at 6106fc3... v2
+	frank@ ~/git/testgit $ git status
+	HEAD detached at 2.0.0
+	nothing to commit, working directory clean
+	frank@ ~/git/3/testgit $ git status
+	HEAD detached at 2.0.0
+	nothing to commit, working directory clean
+	frank@ ~/git/3/testgit $ echo 'dddd'>ddd
+	frank@ ~/git/3/testgit $ git status
+	HEAD detached at 2.0.0
+	Untracked files:
+	  (use "git add <file>..." to include in what will be committed)
+
+		ddd
+
+	nothing added to commit but untracked files present (use "git add" to track)
+	frank@ ~/git/3/testgit $ git add ddd
+	frank@ ~/git/3/testgit $ git commit -m 'ddd'
+	[detached HEAD 012c3d4] ddd
+	 1 file changed, 1 insertion(+)
+	 create mode 100644 ddd
+	frank@ ~/git/3/testgit $ git status
+	HEAD detached from 2.0.0
+	nothing to commit, working directory clean
+	frank@ ~/git/3/testgit $ git checkout dev
+	Warning: you are leaving 1 commit behind, not connected to
+	any of your branches:
+
+	  012c3d4 ddd
+
+	If you want to keep it by creating a new branch, this may be a good time
+	to do so with:
+
+	 git branch <new-branch-name> 012c3d4
+
+	Switched to branch 'dev'
+	Your branch is up-to-date with 'origin/dev'.
+	frank@ ~/git/3/testgit $ git cherry-pick 012c3d4
+	[dev e8f55de] ddd
+	 Date: Wed Oct 3 22:25:17 2018 -0400
+	 1 file changed, 1 insertion(+)
+	 create mode 100644 ddd
+	frank@ ~/git/3/testgit $ ls
+	10		b		de		t		v2.0.1
+	README.md	d1		dev.txt		t2
+	a		dd		hello		text
+	after1.0.0	ddd		ssniu		v2.0
+	frank@ ~/git/3/testgit $ git push origin dev
+	Counting objects: 3, done.
+	Delta compression using up to 2 threads.
+	Compressing objects: 100% (2/2), done.
+	Writing objects: 100% (3/3), 266 bytes | 0 bytes/s, done.
+	Total 3 (delta 1), reused 0 (delta 0)
+	remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+	To git@github.com:Toulouse2008/testgit.git
+	   0c38df7..e8f55de  dev -> dev
+   如果在HEAD detached状态下，修改了文件，而且文件没有commit到HEAD中，切换到其他分支，修改会丢失的，此时，git会给出相应提示，并放弃切换操作。
+   如果要放弃修改，可以强行切换????????
+   如果想放弃已经add或者commit到detached HEAD中的内容，可以用 
+   $git rm --cached file_names
+
+
+
+文件名称太长
+    1. 查看当前配置
+    	$git config --list | -l --global
+    2. 设置core.longpaths true
+    	$git config --global core.longpaths true
+
+git ignores certain type of files
+In order to ignore certain files, create .gitignore file, if it does not exist yet, under the same folder where .git is.
+$echo .DS_Store>>.gitignore
+
+git issue: Error 403!
+$git push -u origin master
+    ==> Error: The requested URL returned error: 403
+    解决方案:
+        1. vi .git/config
+        2. modify url
+            from: https://github.com/Toulouse2008/Flaskr.git
+            to:	  https://Toulouse@github.com/Toulouse2008/Flaskr.git
+        3. $git push -u origin master
+            input your github password:xxxx
+        4. Done
+
+git_key_issue
+git Permission denied (publickey)
+
+- Open Git Bash.
+
+- Paste the text below, substituting in your GitHub email address.
+    $ssh-keygen -t rsa -b 4096 -C wenli.du@udc.edu
+        --->This creates a new ssh key, using the provided email as a label.
+- Generating public/private rsa key pair.
+        --Accept default in this section
+    - When you're prompted to "Enter a file in which to save the key,"
+    press Enter. This accepts the default file location.
+    - Enter a file in which to save the key (/c/Users/you/.ssh/id_rsa):[Press enter]
+    - At the prompt, type a secure passphrase. For more information,
+        see "Working with SSH key passphrases".
+    - Enter passphrase (empty for no passphrase): [Type a passphrase]
+    - Enter same passphrase again: [Type passphrase again]
+
+        Final output in terminal
+        Your identification has been saved in /Users/frank/.ssh/id_rsa.
+        Your public key has been saved in /Users/frank/.ssh/id_rsa.pub.
+        The key fingerprint is:
+        SHA256:32b4IxXy7VtaSJbAtrOvXq/vSkYtQAD74Jdy6PiaalA wenli.du@udc.edu
+        The key's randomart image is:
+        +---[RSA 4096]----+
+        |        .....    |
+        |         . o     |
+        |        o   =    |
+        |    E  . +.o.+ o |
+        |   .    S =ooo* .|
+        |  .    o = oo*.o |
+        |   .  . . o.=.= o|
+        |    .  o  .+.=.= |
+        |   ...o..  o+o**+|
+        +----[SHA256]-----+
+
+- $eval $(ssh-agent -s)
+    Agent pid 59566
+- $ssh-add ~/.ssh/id_rsa
+
+Add public key to github account
+- $ pbcopy < ~/.ssh/id_rsa.pub
+    # Copies the contents of the id_rsa.pub file to your clipboard
+- In the upper-right corner of any page, click your profile photo, then click Settings.
+- In the user settings sidebar, click SSH and GPG keys.
+- Click New SSH key or Add SSH key.
+- In the "Title" field, add a descriptive label for the new key. For example,
+    if you're using a personal Mac, you might call this key "Personal MacBook Air".
+- Paste your public key into the "Key" field.
+- Click Add SSH key.
+- If prompted, confirm your GitHub password.
+
+
+git add
+
+git status
+
+
+git diff
+
+git commit
+
+git reset
+
+git rm
+
+git mv
+
+git clean
+
+git branch
+
+git checkout
+
+
+git merge
+
+git log
+
+git stash
+
+git tag
+
+git fetch
+
+git pull
+
+
+git push
+
+
+git remote
+
+
+git archive
+
+
+git submodule
+
+
+git show
+
+git shortlog
+
+git describe
+
+git bisect
+
+git blame
+
+
+git grep
+
+git cherry-pick
+
+git rebase
+
+git revert

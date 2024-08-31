@@ -1,0 +1,116 @@
+
+练习
+
+安装git Mac OS
+    安装brew
+    $mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+    安装git
+    $brew install git
+
+获取帮助
+    $man git
+    $git help commmit
+    $man git-commit
+
+初步-->主分支master
+1. 建立github账号
+2. 新建repository
+3. Terminal line，新建git文件夹，并切入
+4. 初始化git
+    $git init
+5. 新建txt
+    $touch 1.txt
+6. 加入本地git
+    $git add 1.txt
+7. 执行commit
+    $git commit -m 'test 1'
+8. 建立远程连接
+    $git remote add origin  git@github.com:your_git_username/git.git
+        -->有问题，参考git_key_issue.txt
+9. 完成第一次推送
+    $git push -u origin master
+10. 重复步骤, 即可推送不同文件
+    6-->7-->9
+11. 删除加入本地但不想push的文件
+    $git rm --cached your_file_name
+
+玩玩branch
+1. 先看看当前的整体
+        $git branch	==>本地的分支状况
+        显示所有分支，并以 * 标记当前活动分支
+	$git branch -a 		==>所有分支，包括远程，即github
+2. 新建分支
+    $git branch new     //用分支名称替换new
+3. 再次查看
+    $git branch
+        两个分支，new和master， * 标记在master上
+4. 切入新建的new分支
+    $git checkout new
+5. 看看是否切换成功
+    $git branch
+        此时，* 标记在new分支前面，表示切换成功
+6. 给new分支添点东西
+    $echo "for new test 1" > new1.txt
+    $git add new1.txt
+    $git commit -m 'new first'
+    $git push origin new
+        也可以添加更多内容
+7. 切回master
+    $git checkout master
+
+8. 合并分支
+    注意：先切回master，然后再合并new到master
+    $git merge new
+9. 删除本地合并后的分支
+    $git branch -d new
+    $git branch
+        // 只有master，new已经删除了
+10. 删除github上，已经合并过的分支
+    $git push origin :new
+
+11. 合并分支的策略
+    有很多其他合并策略，比如，ours，recursive, octopus, etc
+    $git merge -s ours
+    $git merge -s recursive
+
+
+分支重命名和rebase
+重命名
+1. 本地
+    $git branch -m your_old_name your_new_name
+2. 远程--->分两步，先推送重命名后的分支，在删除旧分支
+    $git push -u origin new_name
+    $git push origin :old_name
+3. rebase -->把分支从当前主分支的节点，移动到另外的一个节点位置
+
+看看你的状态
+    $git log [options] [commits] [[--]path...]
+    $git log        -->详细记录，退出 q
+    $git log --pretty=oneline   -->单行
+    $git log --oneline --decorate  -->同上
+    美观显示法
+    $git log --graph --all
+
+    $git log --stat
+    $git status
+
+    $git ls-files -s --abbrev
+    $git cat-file -p file_hash_num
+
+合作项目
+1. clone 项目到本地
+    $git clone project_link //--> https://github.com/git_account/angular_shoppinglist.git
+
+配置git
+1. 通过修改 ~/.gitconfig, 控制自己的git信息
+    [user]
+        email = your_email
+        name = your name
+    [push]
+        default = simple
+
+2. 命令行设置
+        格式
+            $git config --{local,global,system} parameter value
+    $git config --global user.name your_name   //-->如果有空格，请放入引号内
+    $git config --global user.email your_email
